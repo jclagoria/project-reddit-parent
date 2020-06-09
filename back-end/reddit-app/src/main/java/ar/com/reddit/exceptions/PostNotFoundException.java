@@ -1,4 +1,9 @@
 package ar.com.reddit.exceptions;
 
-public class PostNotFoundException {
+public class PostNotFoundException extends RuntimeException {
+
+    public PostNotFoundException(String message) {
+        super(message);
+    }
+
 }
