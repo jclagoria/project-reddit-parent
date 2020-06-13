@@ -22,7 +22,7 @@ import static io.jsonwebtoken.Jwts.parser;
 import static java.util.Date.from;
 
 @Service
-public class JwtProvidder {
+public class JwtProvider {
 
     private KeyStore keyStore;
 
@@ -53,9 +53,9 @@ public class JwtProvidder {
                 .compact();
     }
 
-    public String generateTokenWithuserNama(String userName) {
+    public String generateTokenWithuserNama(String username) {
         return Jwts.builder()
-                .setSubject(userName)
+                .setSubject(username)
                 .setIssuedAt(from(Instant.now()))
                 .signWith(getPrivateKey())
                 .setExpiration(Date.from(Instant
@@ -68,7 +68,7 @@ public class JwtProvidder {
         return Boolean.TRUE;
     }
 
-    public String getUsernameFromJwt(String token) {
+    public String getusernameFromJwt(String token) {
         Claims claims = parser()
                 .setSigningKey(getPublickey())
                 .parseClaimsJws(token).getBody();

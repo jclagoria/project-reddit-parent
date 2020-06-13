@@ -13,7 +13,7 @@ public class PostResponse {
     private String postName;
     private String url;
     private String description;
-    private String userName;
+    private String username;
     private String subredditName;
     private Integer voteCount;
     private Integer commentCount;

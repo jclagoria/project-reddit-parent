@@ -1,5 +1,6 @@
 package ar.com.reddit.security;
 
+import ar.com.reddit.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,11 +18,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class JwtAuthentificationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtProvidder jwtProvidder;
-
+    private JwtProvider jwtProvider;
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -29,20 +29,17 @@ public class JwtAuthentificationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
         String jwt = getJwtFromRequest(request);
 
-        if(StringUtils.hasText(jwt) && jwtProvidder.validateToken(jwt)){
-            String userName = jwtProvidder.getUsernameFromJwt(jwt);
+        if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt)) {
+            String username = jwtProvider.getusernameFromJwt(jwt);
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken
-                    (userDetails, null, userDetails.getAuthorities());
-            authenticationToken.setDetails
-                    (new WebAuthenticationDetailsSource()
-                            .buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
+                    null, userDetails.getAuthorities());
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
     }
@@ -50,11 +47,9 @@ public class JwtAuthentificationFilter extends OncePerRequestFilter {
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
 
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
-
         return bearerToken;
     }
-
 }

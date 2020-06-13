@@ -1,6 +1,5 @@
 package ar.com.reddit.config;
 
-import com.sun.deploy.ui.AppInfo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
